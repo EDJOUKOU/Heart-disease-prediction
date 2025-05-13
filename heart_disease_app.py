@@ -3,6 +3,8 @@ import pandas as pd
 import pickle
 import numpy as np
 from sklearn.exceptions import NotFittedError
+import joblib  # Alternative to pickle
+import os
 
 # Set app configuration - MUST BE FIRST STREAMLIT COMMAND
 st.set_page_config(
@@ -18,30 +20,50 @@ This application predicts the likelihood of heart disease based on patient healt
 Please fill in the patient details below and click 'Predict' to see the results.
 """)
 
-# Load the trained model with error handling
-@st.cache_data
+# Enhanced model loading with multiple fallbacks
+@st.cache_resource  # Changed from cache_data to cache_resource for models
 def load_model():
+    model_path = 'best_lr.pkl'
+    backup_path = 'best_lr.joblib'  # Consider having a backup in joblib format
+    
     try:
-        with open('best_lr.pkl', 'rb') as file:
-            model = pickle.load(file)
+        # Try loading with joblib first (more reliable for scikit-learn models)
+        if os.path.exists(backup_path):
+            model = joblib.load(backup_path)
+            st.success("Model loaded successfully from joblib file")
+            return model
             
-        # Verify the model is usable by checking for predict method
-        if not hasattr(model, 'predict'):
-            raise AttributeError("Loaded object is not a valid scikit-learn model")
+        # Fall back to pickle if joblib file doesn't exist
+        if os.path.exists(model_path):
+            with open(model_path, 'rb') as file:
+                model = pickle.load(file)
             
-        return model
-        
-    except FileNotFoundError:
-        st.error("Model file not found. Please ensure 'best_lr.pkl' exists.")
-        st.stop()
+            # Verify the loaded object is a proper model
+            if hasattr(model, 'predict') and hasattr(model, 'predict_proba'):
+                st.success("Model loaded successfully from pickle file")
+                return model
+            else:
+                raise AttributeError("Loaded object doesn't have required model methods")
+        else:
+            raise FileNotFoundError(f"Model file not found at {model_path}")
+            
     except Exception as e:
-        st.error(f"Error loading model: {str(e)}")
+        st.error(f"""
+        **Model Loading Failed**
+        Error: {str(e)}
+        
+        Possible solutions:
+        1. Ensure the model file exists in the correct location
+        2. Verify the model file isn't corrupted
+        3. Try converting the model to joblib format
+        4. Check if the model was saved with the same scikit-learn version
+        """)
         st.stop()
 
 try:
     model = load_model()
-except NotFittedError:
-    st.error("The model appears to be not properly trained.")
+except Exception as e:
+    st.error(f"Critical error loading model: {str(e)}")
     st.stop()
 
 # Create input form
@@ -177,3 +199,4 @@ if submitted:
             
     except Exception as e:
         st.error(f"An error occurred during prediction: {str(e)}")
+        st.error("Please check your input values and try again.")
