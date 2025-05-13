@@ -1,7 +1,0 @@
-import pickle
-from sklearn.linear_model import LogisticRegression
-
-best_lr = LogisticRegression(C=0.1, max_iter=100, penalty='l2', solver='liblinear')
-best_lr.fit(X_train, y_train)  # make sure X_train and y_train are available
-with open("best_lr.pkl", "wb") as f:
-    pickle.dump(best_lr, f)
