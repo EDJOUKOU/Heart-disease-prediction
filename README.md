@@ -59,5 +59,5 @@ Key findings from the EDA process:
 
 The final model achieved strong performance in identifying true positive cases while maintaining reasonable precision, making it suitable for preliminary heart disease risk assessment.  
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/your-username/heart-disease-app/main/app.py)  
+[![Open in Streamlit](http://localhost:8501/))  
 
