@@ -57,7 +57,7 @@ Key findings from the EDA process:
 - **Model Interpretation**: Analyzed coefficients to understand feature importance  
 - **Deployment**: Implemented as a web application using Streamlit for practical clinical use  
 
-The final model achieved strong performance in identifying true positive cases while maintaining reasonable precision, making it suitable for preliminary heart disease risk assessment.  
+The final model achieved strong performance in identifying true positive cases while maintaining reasonable precision, making it suitable for preliminary heart disease risk assessment. [heart disease app](https://heartapppy-aueduyn5fxgrzwlzdssbuz.streamlit.app/) 
 
 
 
